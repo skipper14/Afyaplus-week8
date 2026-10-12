@@ -1,6 +1,6 @@
 **AfyaPlus Week 8 **
 
-Overview
+**Overview**
 
 This project demonstrates controlled changes to AfyaPlus triage prompts and
 read-only clinic MCP tools. The active release is prompt/config/MCP 1.2.0;
@@ -10,13 +10,13 @@ hash/evaluation/MCP/runtime regressions, and ends in an ephemeral Docker
 Compose deployment stub. The app's structured triage response is a deterministic
 fallback, not live LLM inference or medical diagnosis.
 
-Versions
+**Versions**
 prompts: prompt 1.2.0 SHA pinned in prompts/pin.json (with 1.3.0-candidate opt-in for 10% of staging keys only)
 config / model_version: config 1.2.0 (and model_version label updated via scripts/retrain_stub.py)
 mcp server: MCP server 1.2.0 (with tool-schema SHA separately pinned in both release files)
 image tag: afyaplus-week8:v1.2.0 (resolving to local image ID sha256:728d13f3191b6470bce71d7d95ee3fe93546a9e2c4169a7b7542463203b4d7fc)
 
-CI and release pipeline
+**CI and release pipeline**
 
 GitHub Actions is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml):
 pull requests and `main` run lint/tests, then stable/candidate golden eval,
@@ -43,7 +43,7 @@ python3 eval_prompts.py --min-agreement 0.85
 python3 scripts/check_mcp_health.py
 ```
 
-Eval gate and blocking controls
+**Eval gate and blocking controls**
 
 [`evals/golden.jsonl`](evals/golden.jsonl) has four explicitly labelled,
 synthetic routing fixtures. [`eval_prompts.py`](eval_prompts.py) prints
@@ -67,18 +67,7 @@ Both commands must exit 1. Evidence/results are recorded in
 [`evidence/pipeline_dry_run.md`](evidence/pipeline_dry_run.md).
 
 
-MCP health
-- How to run the health probe: Run python scripts/check_mcp_health.py locally or in the pipeline venv. It performs a stdio JSON-RPC initialize, lists required tools, and calls search_clinics, find_available_clinics, and check_stock using local fixtures.
-- What fails the build: It exits nonzero (exit 1) on handshake errors, missing tools, bad schema/results, or version mismatch.
-- Negative control verification:
-  
-'''bash
-$ python scripts/check_mcp_health.py 
-# Exits 1 explicitly on missing tools or handshake contract errors.
-
-
-
-Runtime, rollback, and observability
+**Runtime, rollback, and observability**
 
 - Set `PROMPT_VERSION=1.2.0` on the same image to roll back; `/health` returns
   the actual active version and SHA. Unpinned versions return 503.
@@ -93,7 +82,7 @@ Runtime, rollback, and observability
 - `scripts/retrain_stub.py` only proposes or applies a `model_version` label
   and changelog entry. **No GPU weights were trained.**
 
- Governance and fallbacks
+ **fallbacks**
 
 - No paid model/API calls; deterministic fixtures use the same output schema.
 - No GPU/retraining; the stub explicitly records that no weights changed.
