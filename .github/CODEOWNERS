@@ -1,0 +1,8 @@
+# Repository owner is the active CODEOWNER. Configure clinical_ops and ml-eng
+# as required reviewers in repository rulesets before enabling protected deploys.
+* @skipper14
+/prompts/ @skipper14
+/config/ @skipper14
+/logistics_mcp_versioned.py @skipper14
+/evals/ @skipper14
+/clinical_ops_change_brief.md @skipper14

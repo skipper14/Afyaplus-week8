@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Cases withheld from automated scoring because a clinician must define the expected safe route.",
+  "cases": [
+    {
+      "case_id": "ambiguous-multisystem-001",
+      "reason": "Conflicting symptoms require clinician-authored gold labels.",
+      "expected_action": "human review"
+    }
+  ]
+}

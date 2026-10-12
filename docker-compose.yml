@@ -1,0 +1,22 @@
+services:
+  triage:
+    build: .
+    image: afyaplus-week8:${IMAGE_TAG:-local}
+    ports:
+      - "127.0.0.1:${HOST_PORT:-18765}:8000"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      PROMPT_CANARY_ENABLED: ${PROMPT_CANARY_ENABLED:-false}
+      PROMPT_VERSION: ${PROMPT_VERSION:-}
+    cpus: 1.0
+    mem_limit: 512m
+    labels:
+      com.afyaplus.cost-center: afyaplus-ai-platform
+      com.afyaplus.environment: ${APP_ENV:-local-ci}
+      com.afyaplus.workload: triage-prompt-runtime
+      com.afyaplus.prompt-version: ${PROMPT_VERSION:-1.2.0}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 6

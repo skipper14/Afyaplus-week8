@@ -1,0 +1,18 @@
+{
+  "release_tag": "v1.2.0",
+  "image_tag": "afyaplus-week8:v1.2.0",
+  "config_version": "1.2.0",
+  "mcp_server_version": "1.2.0",
+  "mcp_schema_sha256": "7f0d70731c2416cf556e301dcc64883e4c2072a1e480c7011da273c0e85b6d2f",
+  "default_prompt_version": "1.2.0",
+  "prompts": {
+    "1.2.0": {
+      "path": "prompts/triage_system_v1.2.0.txt",
+      "sha256": "23080bf0aa9b8f06ebf33caec8332a60f8fd7bcdd1b77fa2d1de82dd70768470"
+    },
+    "1.3.0-candidate": {
+      "path": "prompts/triage_system_v1.3.0-candidate.txt",
+      "sha256": "41f0fb37215464ea6738bd3cdecd3a1924478d9830a5d244c4c7a5b4226b3b12"
+    }
+  }
+}

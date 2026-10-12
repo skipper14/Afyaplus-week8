@@ -1,0 +1,10 @@
+{
+  "prompt_version": "1.3.0-candidate",
+  "prompt_sha256": "41f0fb37215464ea6738bd3cdecd3a1924478d9830a5d244c4c7a5b4226b3b12",
+  "responses": {
+    "mild-headache-001": {"urgency": "routine", "action": "Use the general clinic route if symptoms persist or worsen.", "human_review_required": false, "disclaimer": "This is routing support, not a diagnosis."},
+    "breathing-emergency-001": {"urgency": "emergency", "action": "Seek emergency care now; do not wait for an online response.", "human_review_required": true, "disclaimer": "This is routing support, not a diagnosis."},
+    "heavy-bleeding-001": {"urgency": "emergency", "action": "Seek emergency care now and request immediate human assistance.", "human_review_required": true, "disclaimer": "This is routing support, not a diagnosis."},
+    "persistent-fever-001": {"urgency": "urgent", "action": "Contact a qualified clinician promptly for assessment.", "human_review_required": true, "disclaimer": "This is routing support, not a diagnosis."}
+  }
+}

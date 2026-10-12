@@ -1,0 +1,26 @@
+[
+  {
+    "clinic_id": "KE-NBO-001",
+    "name": "AfyaPlus Nairobi Central",
+    "country": "KE",
+    "city": "Nairobi",
+    "services": ["general_practice", "diagnostics", "pharmacy"],
+    "available_slots": 12
+  },
+  {
+    "clinic_id": "KE-KSM-001",
+    "name": "AfyaPlus Kisumu Central",
+    "country": "KE",
+    "city": "Kisumu",
+    "services": ["general_practice", "maternal_health"],
+    "available_slots": 4
+  },
+  {
+    "clinic_id": "UG-KLA-001",
+    "name": "AfyaPlus Kampala East",
+    "country": "UG",
+    "city": "Kampala",
+    "services": ["general_practice", "diagnostics"],
+    "available_slots": 0
+  }
+]

@@ -1,0 +1,111 @@
+name: Prompt and MCP release gates
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: week8-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: ruff check .
+      - run: pytest -q
+      - run: python check_prompt_pin.py
+
+  eval:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Stable golden-set gate
+        run: python eval_prompts.py --prompt-version 1.2.0 --min-agreement 0.85
+      - name: Candidate golden-set gate
+        run: python eval_prompts.py --prompt-version 1.3.0-candidate --min-agreement 0.85
+
+  mcp-health:
+    needs: eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/check_mcp_health.py --expected-version 1.2.0
+      - name: Prove missing required tool fails the MCP gate
+        run: |
+          if python scripts/check_mcp_health.py --require-tool missing_required_tool; then
+            echo "A missing required tool must fail the health probe" >&2
+            exit 1
+          fi
+          echo "Expected nonzero MCP gate observed"
+
+  build-deploy-stub:
+    needs: mcp-health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check semantic release tag matches pins
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          python - <<'PY'
+          import json, os
+          pin = json.load(open("prompts/pin.json", encoding="utf-8"))
+          actual = os.environ["GITHUB_REF_NAME"]
+          if actual != pin["release_tag"]:
+              raise SystemExit(f"tag {actual} != pinned release {pin['release_tag']}")
+          PY
+      - name: Build pull-request image only
+        if: github.event_name == 'pull_request'
+        run: docker build --tag afyaplus-week8:pr-${GITHUB_SHA::12} .
+      - name: Build and deploy pinned main/release image stub
+        if: github.event_name != 'pull_request'
+        env:
+          APP_ENV: local-ci
+          HOST_PORT: "18765"
+          PROMPT_CANARY_ENABLED: "false"
+          PROMPT_VERSION: "1.2.0"
+        run: |
+          set -euo pipefail
+          IMAGE_TAG=$(python -c 'import json; print(json.load(open("prompts/pin.json"))["image_tag"].split(":", 1)[1])')
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          export IMAGE_TAG
+          mkdir -p artifacts
+          docker compose -p afyaplus-week8-ci -f docker-compose.yml build
+          docker compose -p afyaplus-week8-ci -f docker-compose.yml up --detach --wait --wait-timeout 45
+          python scripts/check_runtime.py --base-url http://127.0.0.1:18765 --expected-prompt 1.2.0
+          docker compose -p afyaplus-week8-ci -f docker-compose.yml images --format json > artifacts/image-inspect.json
+          docker inspect "afyaplus-week8:$IMAGE_TAG" --format '{{.Id}}' > artifacts/image-id.txt
+          docker compose -p afyaplus-week8-ci -f docker-compose.yml logs --no-color > artifacts/compose.log
+          docker compose -p afyaplus-week8-ci -f docker-compose.yml down --remove-orphans
+      - name: Upload local deploy evidence
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: week8-deploy-evidence-${{ github.run_id }}
+          path: artifacts/
+          if-no-files-found: warn

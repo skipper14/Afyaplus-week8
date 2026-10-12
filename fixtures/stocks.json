@@ -1,0 +1,4 @@
+[
+  {"item_id": "oral_rehydration_salts", "clinic_id": "KE-NBO-001", "available": true, "quantity_band": "in_stock"},
+  {"item_id": "oral_rehydration_salts", "clinic_id": "KE-KSM-001", "available": false, "quantity_band": "out_of_stock"}
+]
