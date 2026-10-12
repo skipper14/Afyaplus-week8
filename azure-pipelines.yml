@@ -65,6 +65,8 @@ stages:
           - task: UsePythonVersion@0
             inputs:
               versionSpec: "3.12"
+          - script: python -m pip install 'PyYAML>=6,<7'
+            displayName: Install pin-check dependency
           - script: python scripts/check_mcp_health.py --expected-version 1.2.0
             displayName: MCP handshake and required tools
           - script: |

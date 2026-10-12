@@ -52,6 +52,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - run: python -m pip install 'PyYAML>=6,<7'
       - run: python scripts/check_mcp_health.py --expected-version 1.2.0
       - name: Prove missing required tool fails the MCP gate
         run: |
